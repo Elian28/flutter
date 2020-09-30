@@ -65,9 +65,9 @@ class DecoratedBox extends SingleChildRenderObjectWidget {
     @required this.decoration,
     this.position = DecorationPosition.background,
     Widget child,
-  }) : assert(decoration != null),
-       assert(position != null),
-       super(key: key, child: child);
+  })  : assert(decoration != null),
+        assert(position != null),
+        super(key: key, child: child);
 
   /// What decoration to paint.
   ///
@@ -87,7 +87,8 @@ class DecoratedBox extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, RenderDecoratedBox renderObject) {
+  void updateRenderObject(
+      BuildContext context, RenderDecoratedBox renderObject) {
     renderObject
       ..decoration = decoration
       ..configuration = createLocalImageConfiguration(context)
@@ -110,7 +111,9 @@ class DecoratedBox extends SingleChildRenderObjectWidget {
     } else {
       label = 'decoration';
     }
-    properties.add(EnumProperty<DecorationPosition>('position', position, level: position != null ? DiagnosticLevel.hidden : DiagnosticLevel.info));
+    properties.add(EnumProperty<DecorationPosition>('position', position,
+        level:
+            position != null ? DiagnosticLevel.hidden : DiagnosticLevel.info));
     properties.add(DiagnosticsProperty<Decoration>(
       label,
       decoration,
@@ -275,21 +278,20 @@ class Container extends StatelessWidget {
     this.transform,
     this.child,
     this.clipBehavior = Clip.none,
-  }) : assert(margin == null || margin.isNonNegative),
-       assert(padding == null || padding.isNonNegative),
-       assert(decoration == null || decoration.debugAssertIsValid()),
-       assert(constraints == null || constraints.debugAssertIsValid()),
-       assert(clipBehavior != null),
-       assert(color == null || decoration == null,
-         'Cannot provide both a color and a decoration\n'
-         'To provide both, use "decoration: BoxDecoration(color: color)".'
-       ),
-       constraints =
-        (width != null || height != null)
-          ? constraints?.tighten(width: width, height: height)
-            ?? BoxConstraints.tightFor(width: width, height: height)
-          : constraints,
-       super(key: key);
+  })  : assert(margin == null || margin.isNonNegative),
+        assert(padding == null || padding.isNonNegative),
+        assert(decoration == null || decoration.debugAssertIsValid()),
+        assert(constraints == null || constraints.debugAssertIsValid()),
+        assert(clipBehavior != null),
+        assert(
+            color == null || decoration == null,
+            'Cannot provide both a color and a decoration\n'
+            'To provide both, use "decoration: BoxDecoration(color: color)".'),
+        constraints = (width != null || height != null)
+            ? constraints?.tighten(width: width, height: height) ??
+                BoxConstraints.tightFor(width: width, height: height)
+            : constraints,
+        super(key: key);
 
   /// The [child] contained by the container.
   ///
@@ -366,11 +368,9 @@ class Container extends StatelessWidget {
   final Clip clipBehavior;
 
   EdgeInsetsGeometry get _paddingIncludingDecoration {
-    if (decoration == null || decoration.padding == null)
-      return padding;
+    if (decoration == null || decoration.padding == null) return padding;
     final EdgeInsetsGeometry decorationPadding = decoration.padding;
-    if (padding == null)
-      return decorationPadding;
+    if (padding == null) return decorationPadding;
     return padding.add(decorationPadding);
   }
 
@@ -393,8 +393,7 @@ class Container extends StatelessWidget {
     if (effectivePadding != null)
       current = Padding(padding: effectivePadding, child: current);
 
-    if (color != null)
-      current = ColoredBox(color: color, child: current);
+    if (color != null) current = ColoredBox(color: color, child: current);
 
     if (decoration != null)
       current = DecoratedBox(decoration: decoration, child: current);
@@ -410,8 +409,7 @@ class Container extends StatelessWidget {
     if (constraints != null)
       current = ConstrainedBox(constraints: constraints, child: current);
 
-    if (margin != null)
-      current = Padding(padding: margin, child: current);
+    if (margin != null) current = Padding(padding: margin, child: current);
 
     if (transform != null)
       current = Transform(transform: transform, child: current);
@@ -419,9 +417,7 @@ class Container extends StatelessWidget {
     if (clipBehavior != Clip.none) {
       current = ClipPath(
         clipper: _DecorationClipper(
-          textDirection: Directionality.of(context),
-          decoration: decoration
-        ),
+            textDirection: Directionality.of(context), decoration: decoration),
         clipBehavior: clipBehavior,
         child: current,
       );
@@ -433,27 +429,34 @@ class Container extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment, showName: false, defaultValue: null));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('padding', padding, defaultValue: null));
-    properties.add(DiagnosticsProperty<Clip>('clipBehavior', clipBehavior, defaultValue: Clip.none));
+    properties.add(DiagnosticsProperty<AlignmentGeometry>(
+        'alignment', alignment,
+        showName: false, defaultValue: null));
+    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('padding', padding,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<Clip>('clipBehavior', clipBehavior,
+        defaultValue: Clip.none));
     if (color != null)
       properties.add(DiagnosticsProperty<Color>('bg', color));
     else
-      properties.add(DiagnosticsProperty<Decoration>('bg', decoration, defaultValue: null));
-    properties.add(DiagnosticsProperty<Decoration>('fg', foregroundDecoration, defaultValue: null));
-    properties.add(DiagnosticsProperty<BoxConstraints>('constraints', constraints, defaultValue: null));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', margin, defaultValue: null));
+      properties.add(DiagnosticsProperty<Decoration>('bg', decoration,
+          defaultValue: null));
+    properties.add(DiagnosticsProperty<Decoration>('fg', foregroundDecoration,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<BoxConstraints>(
+        'constraints', constraints,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', margin,
+        defaultValue: null));
     properties.add(ObjectFlagProperty<Matrix4>.has('transform', transform));
   }
 }
 
 /// A clipper that uses [Decoration.getClipPath] to clip.
 class _DecorationClipper extends CustomClipper<Path> {
-  _DecorationClipper({
-    TextDirection textDirection,
-    @required this.decoration
-  }) : assert (decoration != null),
-       textDirection = textDirection ?? TextDirection.ltr;
+  _DecorationClipper({TextDirection textDirection, @required this.decoration})
+      : assert(decoration != null),
+        textDirection = textDirection ?? TextDirection.ltr;
 
   final TextDirection textDirection;
   final Decoration decoration;
@@ -465,7 +468,7 @@ class _DecorationClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(_DecorationClipper oldClipper) {
-    return oldClipper.decoration != decoration
-        || oldClipper.textDirection != textDirection;
+    return oldClipper.decoration != decoration ||
+        oldClipper.textDirection != textDirection;
   }
 }
